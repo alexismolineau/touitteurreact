@@ -58,6 +58,10 @@ h1, h2 {
   flex-direction: column;
 }
 
+.loading-img {
+  max-width: 200px;
+}
+
 @media screen and (max-width: 992px){
   .row.top-touits .card-footer{
       flex-direction: row;

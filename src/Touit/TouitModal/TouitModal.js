@@ -13,8 +13,8 @@ class TouitModal extends Component {
             validityMsg: '',
             error: null,
             response: '',
-            nameValue: null,
-            commentValue: null,
+            nameValue: '',
+            commentValue: '',
             displayAlert: true
         }
     }
@@ -26,7 +26,7 @@ class TouitModal extends Component {
     addComment = (name, comment, id) => {
         this.setState({isValid: true});
         this.handleDisplayState(true);
-        if(this.state.nameValue === null || this.state.commentValue === null){
+        if(this.state.nameValue === '' || this.state.commentValue === ''){
             this.setState({ isValid: false,
             validityMsg: 'le pseudo et le commentaire ne peuvent être vides'})
             return;
@@ -66,7 +66,16 @@ class TouitModal extends Component {
             )
         }).then(
             this.setState({validityMsg: 'Le commentaire a été soumis'})
-        );
+        ).then(
+            this.props.getCommentsByMessageId(this.props.id)
+        ).then(
+            this.setState({
+                nameValue: '',
+                commentValue: ''
+            })
+        ).then(
+            this.props.updateCommentsCount()
+        )
     }
 
     getNameInputValue = value => {
@@ -94,7 +103,7 @@ class TouitModal extends Component {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <ModalHeader displayModalMethod={this.props.displayModalMethod}/>
-                        <ModalBody id={this.props.id} isValid={this.state.isValid} validityMsg={this.state.validityMsg} isLoaded={this.state.isLoaded} getNameInputValue={this.getNameInputValue} getCommentInputValue={this.getCommentInputValue} handleDisplayState={this.handleDisplayState} displayAlert={this.state.displayAlert}/>
+                        <ModalBody id={this.props.id} isValid={this.state.isValid} validityMsg={this.state.validityMsg} isLoaded={this.state.isLoaded} getNameInputValue={this.getNameInputValue} getCommentInputValue={this.getCommentInputValue} handleDisplayState={this.handleDisplayState} displayAlert={this.state.displayAlert} nameValue={this.state.nameValue} commentValue={this.state.commentValue}/>
                         <ModalFooter displayModalMethod={this.props.displayModalMethod} addCommentMethod={this.handleAddCommentClick}/>
                     </div>
                 </div>

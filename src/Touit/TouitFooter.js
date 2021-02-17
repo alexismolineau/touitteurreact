@@ -11,7 +11,10 @@ class TouitFooter extends Component {
         this.state= {
             liked: false,
             likeContent: this.notLiked,
-            displayModal : false
+            displayModal : false,
+            isLoaded: false,
+            response: '',
+            error: null
         }
         //bind
         this.addRemoveLike = this.addRemoveLike.bind(this);
@@ -34,8 +37,47 @@ class TouitFooter extends Component {
     addRemoveLike = () =>{
         this.setState({liked: !this.state.liked}, () => {
             this.updateLikeContent();
+            const data = new FormData();
+            data.append('message_id', this.props.id);
+
+            this.state.liked ? 
+            this.putDeleteLike(`http://touiteur.cefim-formation.org/likes/send`, 'PUT')
+            :
+            this.putDeleteLike(`http://touiteur.cefim-formation.org/likes/remove`, 'DELETE');
+
         });
     }
+
+    putDeleteLike = (url, method) => {
+
+        const data = new FormData();
+        data.append('message_id', this.props.id);
+
+        const options = {
+            method: method,
+            body: data
+        }
+        fetch(url, options)
+        .then(response => response.json())
+        .then(result => {
+            this.setState(
+                {
+                    response: result,
+                    isLoaded: true
+                }
+            );
+        },
+        error => {
+            this.setState(
+                {
+                    isLoaded: true,
+                    error: error
+                }
+            )
+        })
+
+    }
+
 
     handleDisplayModal = () => {
         this.setState(
@@ -51,7 +93,7 @@ class TouitFooter extends Component {
                 <div className="card-buttons">
                     <Button classList={'btn btn-light text-info'} content={this.state.likeContent} method={this.addRemoveLike}/>
                     <Button classList={'btn btn-info text-light'} content={'Commenter'} method={this.handleDisplayModal}/>
-                    <TouitModal displayModal={this.state.displayModal} displayModalMethod={this.handleDisplayModal} id={this.props.id}/>
+                    <TouitModal displayModal={this.state.displayModal} getCommentsByMessageId={this.props.getCommentsByMessageId} displayModalMethod={this.handleDisplayModal} updateCommentsCount={this.props.updateCommentsCount} id={this.props.id}/>
                 </div>
                 <div className="comments-container">
                     <Button classList={'display-comments btn btn-info text-light'} disabled={!this.props.nbComments} content={`Commentaires (${this.props.nbComments})`} method={this.props.handleDisplayComments}/>

@@ -15,8 +15,8 @@ class NewTouitForm extends Component {
             isValid: false,
             error: null,
             response: '',
-            nameValue: null,
-            messageValue: null,
+            nameValue: '',
+            messageValue: '',
             validityMsg: '',
             displayAlert: true,
         }
@@ -34,7 +34,7 @@ class NewTouitForm extends Component {
     addTouit = (name, message) => {
         this.setState({isValid: true});
         this.handleDisplayState(true);
-        if(this.state.nameValue === null || this.state.messageValue === null){
+        if(this.state.nameValue === '' || this.state.messageValue === ''){
             this.setState({ isValid: false,
             validityMsg: 'le pseudo et le touit ne peuvent être vides'})
             return;
@@ -72,7 +72,11 @@ class NewTouitForm extends Component {
                 }
             )
         }).then(
-            this.setState({validityMsg: 'Le touit a été soumis'})
+            this.setState({
+                validityMsg: 'Le touit a été soumis',
+                messageValue: '',
+                nameValue: ''
+            })
         );
     }
 
@@ -92,14 +96,15 @@ class NewTouitForm extends Component {
             });
     } 
 
+
     render() {
         return (
         <form className='row align-items-center pb-3'>
                 {this.state.isValid && this.state.isLoaded ? <Alert alertContent={this.state.validityMsg} classList={"alert alert-success"} handleDisplayState={this.handleDisplayState} display={this.state.displayAlert}/>  : <></>}
                 {!this.state.isValid && this.state.validityMsg !== '' ? <Alert alertContent={this.state.validityMsg} classList={"alert alert-danger"} handleDisplayState={this.handleDisplayState} display={this.state.displayAlert}/> : <></>}
             <div className='row g-3 col-md-10 mb-3'>
-                <Input inputType={'text'} inputId={'pseudo'} placeholder={'pseudo'} labelContent={'Pseudo'} inputClassList={'form-control'} maxLength={16} required={true} method={this.getNameInputValue}/> 
-                <Input inputType={'textarea'} inputId={'message'} placeholder={'message'} labelContent={'Message'} inputClassList={'form-control'} maxLength={256} required={true} method={this.getMessageInputValue}/> 
+                <Input inputType={'text'} inputId={'pseudo'} placeholder={'pseudo'} labelContent={'Pseudo'} inputClassList={'form-control'} maxLength={16} required={true} method={this.getNameInputValue} value={this.state.nameValue}/> 
+                <Input inputType={'textarea'} inputId={'message'} placeholder={'message'} labelContent={'Message'} inputClassList={'form-control'} maxLength={256} required={true} method={this.getMessageInputValue} value={this.state.messageValue}/> 
             </div>
             <div className="col-md-2">
                 <Button type={'button'} classList={'btn btn-info text-light'} disabled={false} content={'Envoyer'} method={this.handleClick}/>
