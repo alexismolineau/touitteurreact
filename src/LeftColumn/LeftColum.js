@@ -25,7 +25,6 @@ class LeftColumn extends Component {
     }
 
     componentDidUpdate = () => {
-        console.log(this.state.messages.length, this.state.items)
         if(!this.checkIfMessagesContainsValue()){
             this.loadMoreItems();
         }
@@ -77,7 +76,6 @@ class LeftColumn extends Component {
     };
 
     loadMoreItems = () => {
-        console.log(this.state.items);
         if (this.state.loadingState) {
             return;
         }
@@ -103,7 +101,7 @@ class LeftColumn extends Component {
                         null
                         }
                         {
-                        this.state.messages.length > this.state.items || this.state.ts === 0 ? 
+                        this.state.messages.length > this.state.items || this.state.ts ===0 ? 
                             <img src="./loading.gif" alt="loading" className="loading-img"/>
                             :
                             <div>Plus de touits à charger...</div>
