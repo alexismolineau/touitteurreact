@@ -21,7 +21,25 @@ class LeftColumn extends Component {
 
     componentDidMount = () => {
         this.getTouits();
-        window.addEventListener('scroll', this.onInfiniteScroll)
+        window.addEventListener('scroll', this.onInfiniteScroll);
+    }
+
+    componentDidUpdate = () => {
+        if(!this.checkIfMessagesContainsValue()){
+            this.loadMoreItems();
+        }
+    }
+
+    checkIfMessagesContainsValue = () => {
+        let found = false;
+        this.state.messages.slice(0, this.state.items ).map(
+            message => {
+                if(message.message.toLowerCase().includes(this.props.filter)){
+                    found = true;
+                    return found;
+                }
+            });
+        return found;
     }
 
     getTouits = () => {
@@ -56,6 +74,7 @@ class LeftColumn extends Component {
     };
 
     loadMoreItems = () => {
+        console.log(this.state.items);
         if (this.state.loadingState) {
             return;
         }
@@ -74,8 +93,8 @@ class LeftColumn extends Component {
                     <h2>Touits récents</h2>
                     <div className="row text-start flex-column align-items-center justify-content-between" >
                         {this.state.isLoaded ? 
-                        this.state.messages.slice(0, this.props.filter==='' ? this.state.items : this.state.messages.length).map(
-                            (message, index )=> message.message.toLowerCase().includes(this.props.filter) || message.name.toLowerCase().includes(this.props.filter) ? <Touit pseudo={message.name} message={message.message} id={message.id} key={`touit-${index}`} nbComments={message.comments_count} nbLikes={message.likes}/> : null                       
+                        this.state.messages.slice(0, this.state.items ).map(
+                            (message, index )=> message.message.toLowerCase().includes(this.props.filter) ? <Touit pseudo={message.name} message={message.message} id={message.id} key={`touit-${index}`} nbComments={message.comments_count} nbLikes={message.likes}/> : null                       
                             )
                         :
                         null
