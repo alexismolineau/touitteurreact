@@ -78,9 +78,10 @@ class Touit extends Component {
 
     render(){
         return (
+
             <div className="card col-12 mb-3" id={this.props.id}>
                 <TouitContent pseudo={this.props.pseudo} message={this.props.message}/>
-                <TouitFooter nbComments={this.state.commentsCounts} handleDisplayComments={this.handleDisplayCommentClick} getCommentsByMessageId={this.getCommentsByMessageId} id={this.props.id} updateCommentsCount={this.updateCommentsCount}/>
+                <TouitFooter nbComments={this.state.commentsCounts} handleDisplayComments={this.handleDisplayCommentClick} getCommentsByMessageId={this.getCommentsByMessageId} id={this.props.id} updateCommentsCount={this.updateCommentsCount} nbLikes={this.props.nbLikes} />
                 <TouitCollapse displayComments={this.state.displayComments} comments={this.state.comments} isLoaded={this.state.isLoaded} id={this.props.id}/>
             </div>
         )

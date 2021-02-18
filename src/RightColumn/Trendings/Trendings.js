@@ -10,7 +10,8 @@ class Trendings extends Component {
         this.state = {
             isLoaded: false,
             error: null,
-            trendings: []
+            trendings: [],
+            badgeClicked: false
         }
     }
 
@@ -39,6 +40,7 @@ class Trendings extends Component {
         });
     }
 
+
     render(){
         return (
             <div className="row mb-3">
@@ -46,7 +48,7 @@ class Trendings extends Component {
                     <h2>Trendings</h2>
                     <div className="row justify-content-around">
                     {this.state.trendings.map(
-                        trending => trending[1] > 10 ? < Badge badgeContent={trending[0]} key={trending[0]} /> : null
+                        trending => trending[1] > 10 ? < Badge badgeContent={trending[0]} key={trending[0]} filterTouits={this.props.filterTouits} filter={this.props.filter}/> : null
                     )}
                     </div>
                 </div>
