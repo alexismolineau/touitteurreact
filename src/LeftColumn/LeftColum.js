@@ -25,6 +25,7 @@ class LeftColumn extends Component {
     }
 
     componentDidUpdate = () => {
+        console.log(this.state.messages.length, this.state.items)
         if(!this.checkIfMessagesContainsValue()){
             this.loadMoreItems();
         }
@@ -50,7 +51,7 @@ class LeftColumn extends Component {
                 {
                     isLoaded: true,
                     messages: result.messages.reverse().concat([...this.state.messages]),
-                    ts: result.messages.length > 0 ? result.messages[result.messages.length -1].ts : this.state.ts
+                    ts: result.messages.length > 0 ? result.messages[0].ts : this.state.ts
                 }
             );
         },
@@ -63,7 +64,9 @@ class LeftColumn extends Component {
             )
         })
         .then(
-            setTimeout(this.getTouits, 1000)
+            () => setTimeout(
+                setTimeout(this.getTouits, 1000), 5000 //set timeout dans settimeout à l'arache pour que le ts ai le temps de s'updater
+            )
         );
     }
 
@@ -99,7 +102,12 @@ class LeftColumn extends Component {
                         :
                         null
                         }
-                        <img src="./loading.gif" alt="loading" className="loading-img"/>
+                        {
+                        this.state.messages.length > this.state.items || this.state.ts === 0 ? 
+                            <img src="./loading.gif" alt="loading" className="loading-img"/>
+                            :
+                            <div>Plus de touits à charger...</div>
+                        }
                     </div>
                 </div>
             </div>
