@@ -31,7 +31,7 @@ class LeftColumn extends Component {
             this.setState(
                 {
                     isLoaded: true,
-                    messages: [...this.state.messages].concat(result.messages),
+                    messages: result.messages.reverse().concat([...this.state.messages]),
                     ts: result.messages.length > 0 ? result.messages[result.messages.length -1].ts : this.state.ts
                 }
             );
@@ -74,7 +74,7 @@ class LeftColumn extends Component {
                     <h2>Touits récents</h2>
                     <div className="row text-start flex-column align-items-center justify-content-between" >
                         {this.state.isLoaded ? 
-                        this.state.messages.reverse().slice(0, this.props.filter==='' ? this.state.items : this.state.messages.length).map(
+                        this.state.messages.slice(0, this.props.filter==='' ? this.state.items : this.state.messages.length).map(
                             (message, index )=> message.message.toLowerCase().includes(this.props.filter) || message.name.toLowerCase().includes(this.props.filter) ? <Touit pseudo={message.name} message={message.message} id={message.id} key={`touit-${index}`} nbComments={message.comments_count} nbLikes={message.likes}/> : null                       
                             )
                         :
