@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ModalHeader from './ModalHeader';
 import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
+import apiTouits from "../../Utils/apiTouits";
 
 class TouitModal extends Component {
 
@@ -38,44 +39,24 @@ class TouitModal extends Component {
             return;
         }
 
-        const data = new FormData();
-        data.append('name', name);
-        data.append('comment', comment);
-        data.append('message_id', id);
-
-        const options = {
-            method: 'POST',
-            body: data
-        }
-        fetch(`http://touiteur.cefim-formation.org/comments/send`, options)
-        .then(response => response.json())
-        .then(result => {
-            this.setState(
-                {
-                    response: result,
-                    isLoaded: true
-                }
-            );
-        },
-        error => {
-            this.setState(
-                {
-                    isLoaded: true,
-                    error: error
-                }
-            )
-        }).then(
-            this.setState({validityMsg: 'Le commentaire a été soumis'})
-        ).then(
-            this.props.getCommentsByMessageId(this.props.id)
-        ).then(
-            this.setState({
+    apiTouits.sendComment(name, comment, id)
+        .then(
+            result => this.setState({
+                validityMsg: 'Le commentaire a été soumis',
                 nameValue: '',
-                commentValue: ''
+                commentValue: '',
+                response: result,
+                isLoaded: true
             })
         ).then(
-            this.props.updateCommentsCount()
-        )
+            next => {
+                this.props.getCommentsByMessageId(this.props.id);
+                this.props.updateCommentsCount();
+            }
+        );
+
+
+
     }
 
     getNameInputValue = value => {

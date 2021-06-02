@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Button from '../Utils/Buttons/Button';
 import Input from '../Utils/Input';
 import Alert from '../Utils/Alert/Alert';
+import apiTouits from "../Utils/apiTouits";
 
 
 class NewTouitForm extends Component {
@@ -21,8 +22,6 @@ class NewTouitForm extends Component {
             displayAlert: true,
         }
 
-        //binding
-        this.handleClick = this.handleClick.bind(this);
     }
 
 
@@ -32,51 +31,32 @@ class NewTouitForm extends Component {
     }
 
     addTouit = (name, message) => {
-        this.setState({isValid: true});
         this.handleDisplayState(true);
         if(this.state.nameValue === '' || this.state.messageValue === ''){
-            this.setState({ isValid: false,
+            this.setState({
             validityMsg: 'le pseudo et le touit ne peuvent être vides'})
             return;
         }else if (this.state.nameValue.length < 3 || this.state.nameValue.length > 16){
-            this.setState({ isValid: false, validityMsg: 'le pseudo doit être compris entre 3 et 16 caractères'})
+            this.setState({ validityMsg: 'le pseudo doit être compris entre 3 et 16 caractères'})
             return;
         }else if (this.state.messageValue.length < 3 || this.state.messageValue.length > 200){
-            this.setState({ isValid: false, validityMsg: 'le touit doit faire entre 3 et 200 caractères'})
+            this.setState({  validityMsg: 'le touit doit faire entre 3 et 200 caractères'})
             return;
         }
+        this.setState({isValid: true});
+        this.makeApiPost(name, message);
+    }
 
-        const data = new FormData();
-        data.append('name', name);
-        data.append('message', message);
 
-        const options = {
-            method: 'POST',
-            body: data
-        }
-        fetch(`http://touiteur.cefim-formation.org/send`, options)
-        .then(response => response.json())
-        .then(result => {
-            this.setState(
-                {
+    makeApiPost = (name, message) => {
+        return apiTouits.postTouit(name, message).then(
+            result => this.setState({
                     response: result,
-                    isLoaded: true
-                }
-            );
-        },
-        error => {
-            this.setState(
-                {
                     isLoaded: true,
-                    error: error
-                }
-            )
-        }).then(
-            this.setState({
-                validityMsg: 'Le touit a été soumis',
-                messageValue: '',
-                nameValue: ''
-            })
+                    validityMsg: 'Le touit a été soumis',
+                    messageValue: '',
+                    nameValue: ''
+                })
         );
     }
 

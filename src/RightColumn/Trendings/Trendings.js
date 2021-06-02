@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-
 import Badge from './Badge';
+import apiTouits from "../../Utils/apiTouits";
 
 class Trendings extends Component {
 
@@ -16,29 +16,21 @@ class Trendings extends Component {
     }
 
     componentDidMount = () => {
-        this.getTrendings();
+        this.makeApiTrengindsCall();
     }
 
-    getTrendings = () => {
-        fetch(`http://touiteur.cefim-formation.org/trending`)
-        .then(response => response.json())
-        .then(result => {
-            this.setState(
+    makeApiTrengindsCall = () => {
+        apiTouits.getTrendings().then(
+            result => this.setState(
                 {
                     isLoaded: true,
                     trendings: Object.entries(result)
                 }
-            );
-        },
-        error => {
-            this.setState(
-                {
-                    isLoaded: true,
-                    error: error
-                }
             )
-        });
+        )
     }
+
+
 
 
     render(){

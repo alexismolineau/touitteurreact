@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Touit from '../Touit/Touit';
+import apiTouits from "../Utils/apiTouits";
 
 class LeftColumn extends Component {
 
     constructor(props){
         super(props);
-
         this.state = {
             isLoaded: false,
             error: null,
@@ -14,15 +14,25 @@ class LeftColumn extends Component {
             items: 100,
             loadingState: false,
         }
-
     }
 
 
 
-    componentDidMount = () => {
-        this.getTouits();
+    componentDidMount() {
+        setInterval(this.makeApiCall, 1000)
         window.addEventListener('scroll', this.onInfiniteScroll);
     }
+
+    makeApiCall = () => {
+        return apiTouits.getTouits(this.state.ts).then(
+            result => this.setState( {
+                isLoaded: true,
+                messages: result.messages.reverse().concat([...this.state.messages]),
+                ts: result.messages.length > 0 ? result.messages[0].ts : this.state.ts
+            })
+        )
+    }
+
 
     componentDidUpdate = () => {
         if(!this.checkIfMessagesContainsValue()){
@@ -42,32 +52,7 @@ class LeftColumn extends Component {
         return found;
     }
 
-    getTouits = () => {
-        fetch(`http://touiteur.cefim-formation.org/list?ts=${this.state.ts}`)
-        .then(response => response.json())
-        .then(result => {
-            this.setState(
-                {
-                    isLoaded: true,
-                    messages: result.messages.reverse().concat([...this.state.messages]),
-                    ts: result.messages.length > 0 ? result.messages[0].ts : this.state.ts
-                }
-            );
-        },
-        error => {
-            this.setState(
-                {
-                    isLoaded: true,
-                    error: error
-                }
-            )
-        })
-        .then(
-            () => setTimeout(
-                setTimeout(this.getTouits, 1000), 5000 //set timeout dans settimeout à l'arache pour que le ts ai le temps de s'updater
-            )
-        );
-    }
+
 
     onInfiniteScroll = () => {
         if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
@@ -95,7 +80,7 @@ class LeftColumn extends Component {
                     <div className="row text-start flex-column align-items-center justify-content-between" >
                         {this.state.isLoaded ? 
                         this.state.messages.slice(0, this.state.items ).map(
-                            (message, index )=> message.message.toLowerCase().includes(this.props.filter) ? <Touit pseudo={message.name} message={message.message} id={message.id} key={`touit-${index}`} nbComments={message.comments_count} nbLikes={message.likes}/> : null                       
+                            (message)=> message.message.toLowerCase().includes(this.props.filter) ? <Touit pseudo={message.name} message={message.message} id={message.id} key={`touit-${message.id}`} nbComments={message.comments_count} nbLikes={message.likes}/> : null
                             )
                         :
                         null

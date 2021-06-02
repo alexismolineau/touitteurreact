@@ -5,7 +5,7 @@ import LeftColumn from './LeftColumn/LeftColum';
 import RightColum from './RightColumn/RightColum';
 import { useState } from 'react';
 
-function App() {
+const App = () => {
 
   const [filter, setFilter] = useState('');
   const filterTouits = filterTerm => {

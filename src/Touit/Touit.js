@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TouitContent from './TouitContent';
 import TouitFooter from './TouitFooter';
 import TouitCollapse from './TouitCollapse';
+import apiTouits from "../Utils/apiTouits";
 
 class Touit extends Component {
 
@@ -11,11 +12,24 @@ class Touit extends Component {
             displayComments: false,
             comments: [],
             error: null,
-            commentsCounts: this.props.nbComments
+            commentsCounts: this.props.nbComments,
+            likeCounts: this.props.nbLikes,
+            image: ''
         }
 
-        //binding
-        this.handleDisplayCommentClick = this.handleDisplayCommentClick.bind(this);
+    }
+
+    componentDidMount =() => {
+        apiTouits.getAvatar(this.props.pseudo)
+            .then(
+               result => {
+                   console.log(result)
+                   this.setState({image: result})}
+            )
+    }
+
+    componentWillUnmount = () => {
+        this.setState({displayComments: false});
     }
 
     handleDisplayCommentClick = () =>{
@@ -23,28 +37,15 @@ class Touit extends Component {
     }
 
     getCommentsByMessageId = id => {
-        fetch(`http://touiteur.cefim-formation.org/comments/list?message_id=${id}`)
-        .then(response => response.json())
-        .then(result => {
-            this.setState(
+        apiTouits.getCommentsByMessage(id).then(
+            result => this.setState(
                 {
                     isLoaded: true,
-                    comments: result.comments
-                }
-            );
-        },
-        error => {
-            this.setState(
-                {
-                    isLoaded: true,
-                    error: error
+                    comments: result.comments,
+                    displayComments: !this.state.displayComments
+
                 }
             )
-        })
-        .then(
-            this.setState({
-                displayComments: !this.state.displayComments
-            })
         ).then(
             setTimeout(this.updateCommentsCount, 1000)
         )
@@ -52,36 +53,27 @@ class Touit extends Component {
 
 
 
-    updateCommentsCount = () => {
-        fetch(`http://touiteur.cefim-formation.org/get?id=${this.props.id}`)
-        .then(response => response.json())
-        .then(result => {
-            this.setState(
+    updateCommentsLikesCount = () => {
+        apiTouits.updateLikeOnComments(this.props.id).then(
+            result =>  this.setState(
                 {
                     isLoaded: true,
-                    commentsCounts: result.data.comments_count
-                }
-            );
-        },
-        error => {
-            this.setState(
-                {
-                    isLoaded: true,
-                    error: error
+                    commentsCounts: result.data.comments_count,
+                    likeCounts: result.data.likes
                 }
             )
-        }).then(
         )
     }
+
 
 
 
     render(){
         return (
 
-            <div className="card col-12 mb-3" id={this.props.id}>
-                <TouitContent pseudo={this.props.pseudo} message={this.props.message}/>
-                <TouitFooter nbComments={this.state.commentsCounts} handleDisplayComments={this.handleDisplayCommentClick} getCommentsByMessageId={this.getCommentsByMessageId} id={this.props.id} updateCommentsCount={this.updateCommentsCount} nbLikes={this.props.nbLikes} />
+            <div className="card col-12 mb-3" id={this.props.id} onMouseEnter={this.updateCommentsLikesCount}>
+                <TouitContent pseudo={this.props.pseudo} message={this.props.message} image={this.state.image}/>
+                <TouitFooter nbComments={this.state.commentsCounts} handleDisplayComments={this.handleDisplayCommentClick} getCommentsByMessageId={this.getCommentsByMessageId} id={this.props.id} updateCommentsCount={this.updateCommentsLikesCount} nbLikes={this.state.likeCounts} />
                 <TouitCollapse displayComments={this.state.displayComments} comments={this.state.comments} isLoaded={this.state.isLoaded} id={this.props.id}/>
             </div>
         )
